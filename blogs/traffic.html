@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Intelligence: Using AI to Unsnarl Cities — MHC Blog</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="../index.html" class="nav-logo">MHC.dev</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html" class="active">Blog</a></li>
+      <li><a href="../index.html#about">About</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <a href="../admin.html" class="nav-admin-link">Admin</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <a href="../blog.html" class="back-link">&larr; Back to Blog</a>
+
+    <div class="article-wrap fade-up">
+      <div class="article-meta">
+        <span class="post-cat">Smart Cities</span>
+        <span>2024-03-01</span>
+      </div>
+      <h1 class="article-title">Traffic Intelligence: Using AI to Unsnarl Cities</h1>
+      <img src="../media/traffic.avif" alt="Traffic AI" class="article-cover" onerror="this.style.display='none'">
+
+      <div class="article-body">
+        <p>
+          Urban traffic is a solvable problem. By deploying distributed camera networks with edge AI inference,
+          cities can predict congestion 15 minutes ahead and dynamically reroute traffic signals. The technology
+          exists — what's needed is a cost-effective deployment strategy.
+        </p>
+
+        <h2>The Scale of the Problem</h2>
+        <p>
+          Traffic congestion costs cities billions annually in lost productivity, fuel waste, and increased emissions.
+          Traditional traffic management systems react to congestion after it forms. AI-powered systems can anticipate it.
+        </p>
+
+        <h2>How It Works</h2>
+        <p>
+          The system uses a network of smart cameras at intersections, each running lightweight computer vision models
+          at the edge. These cameras count vehicles, classify their types, and measure flow speeds in real time.
+          This data feeds into a city-wide prediction model that identifies where congestion will form before it does.
+        </p>
+
+        <h2>Dynamic Signal Control</h2>
+        <p>
+          Once the prediction model identifies an emerging bottleneck, it adjusts traffic signal timings upstream
+          to smooth vehicle flow. Green wave corridors can be created dynamically, guiding traffic through the path
+          of least resistance. Early simulations suggest <strong>reductions in congestion of up to 40%</strong> in
+          optimized corridors.
+        </p>
+
+        <h2>Cost-Effective Deployment</h2>
+        <p>
+          The proposal outlines a phased strategy for mid-sized cities. Phase 1 focuses on the top 20 most congested
+          intersections, using existing camera infrastructure where available. Phase 2 expands coverage and introduces
+          the prediction model. Phase 3 integrates with public transit systems for coordinated optimization.
+        </p>
+
+        <h2>Privacy Considerations</h2>
+        <p>
+          All processing happens at the edge — no raw video is transmitted to the cloud. The system tracks vehicle
+          counts and patterns, not individuals. This architecture ensures compliance with privacy regulations while
+          maintaining the performance needed for real-time traffic management.
+        </p>
+
+        <h2>The Road Ahead</h2>
+        <p>
+          This isn't a distant future technology. The components — computer vision, edge computing, and traffic
+          signal APIs — all exist today. The barrier is integration and deployment. With the right framework,
+          cities of any size can start making their streets smarter.
+        </p>
+      </div>
+    </div>
+
+    <footer class="site-footer"><span>Masoomul Haque Choudhury &mdash; Built for GitHub Pages</span></footer>
+  </div>
+
+  <script>
+    document.getElementById('navToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
