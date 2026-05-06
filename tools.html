@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tools & Technologies — Masoomul Haque Choudhury</title>
+  <meta name="description" content="Tools & Technology projects by Masoomul Haque Choudhury.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div class="page-wrap">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <div class="section-header fade-up">
+      <div class="page-label">06 / Domain</div>
+      <h1 class="page-title">Tools &amp; Technologies</h1>
+      <p class="page-desc">Python tools, CV systems, Web3 contracts, and developer utilities built from scratch.</p>
+    </div>
+    <hr class="thin-divider">
+    <div class="projects-section" id="projectsSection"></div>
+    <footer class="site-footer"><span>Masoomul Haque Choudhury &mdash; Built for GitHub Pages</span></footer>
+  </div>
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    document.getElementById('nav-placeholder').innerHTML = renderNav('');
+    initMobileNav();
+    renderProjectsSection('tools', document.getElementById('projectsSection'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug Bounty — Masoomul Haque Choudhury</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div class="page-wrap">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <div class="section-header fade-up">
+      <div class="page-label">07 / Domain</div>
+      <h1 class="page-title">Bug Bounty</h1>
+      <p class="page-desc">The journey from gaming hacks to ethical hacking and responsible disclosure.</p>
+    </div>
+    <hr class="thin-divider">
+
+    <!-- Static story section since this is personal narrative -->
+    <div class="projects-section">
+      <div class="section-label">My Journey</div>
+      <div class="project-card fade-up" style="max-width:680px;">
+        <div class="project-card-title">From Gamer to Ethical Hacker</div>
+        <p class="project-card-desc">
+          My path into cybersecurity started with gaming — understanding how game systems worked, then how networks
+          functioned, and eventually how vulnerabilities could be responsibly disclosed. This curiosity evolved into
+          a formal interest in bug bounty programs and ethical hacking methodology.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Ethical Hacking</span>
+          <span class="tag">Bug Bounty</span>
+          <span class="tag">Network Security</span>
+          <span class="tag">Responsible Disclosure</span>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;" id="projectsSection"></div>
+    </div>
+
+    <footer class="site-footer"><span>Masoomul Haque Choudhury &mdash; Built for GitHub Pages</span></footer>
+  </div>
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    document.getElementById('nav-placeholder').innerHTML = renderNav('');
+    initMobileNav();
+    renderProjectsSection('bugbounty', document.getElementById('projectsSection'));
+  </script>
+</body>
+</html>

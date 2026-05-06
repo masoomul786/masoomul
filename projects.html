@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Masoomul Haque Choudhury</title>
+  <meta name="description" content="All projects by Masoomul Haque Choudhury — AI, Cybersecurity, Robotics, Defense, and more.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+
+  <div class="page-wrap">
+    <div class="section-header fade-up">
+      <div class="page-label">Portfolio</div>
+      <h1 class="page-title">All Projects</h1>
+      <p class="page-desc">Every project I've built, researched, or contributed to — across all domains.</p>
+    </div>
+
+    <div class="projects-section">
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-cat="">All</button>
+        <!-- Category buttons are injected dynamically from data.js -->
+      </div>
+      <div id="projectsContainer"></div>
+    </div>
+
+    <footer class="site-footer">
+      <span>Masoomul Haque Choudhury &mdash; Built for GitHub Pages</span>
+    </footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    document.getElementById('nav-placeholder').innerHTML = renderNav('projects.html');
+    initMobileNav();
+    refreshCategoryNames();
+
+    // Read category from URL param ?cat=ID
+    const urlParams = new URLSearchParams(window.location.search);
+    let activeCategory = urlParams.get('cat') || '';
+
+    // Inject dynamic category filter buttons
+    (function buildCatButtons() {
+      const bar = document.getElementById('filterBar');
+      getCategories().forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn';
+        if (c.id === activeCategory) btn.classList.add('active');
+        btn.dataset.cat = c.id;
+        btn.textContent = c.name;
+        bar.appendChild(btn);
+      });
+      // If a category is pre-selected from URL, remove active from 'All'
+      if (activeCategory) {
+        document.querySelector('.filter-btn[data-cat=""]').classList.remove('active');
+      }
+      // Update page title/desc if category is set
+      if (activeCategory) {
+        const cat = getCategories().find(c => c.id === activeCategory);
+        if (cat) {
+          const titleEl = document.querySelector('.page-title');
+          const descEl  = document.querySelector('.page-desc');
+          if (titleEl) titleEl.textContent = cat.name + ' Projects';
+          if (descEl)  descEl.textContent  = 'All projects in the ' + cat.name + ' domain.';
+        }
+      }
+    })();
+
+    function renderAll() {
+      const container = document.getElementById('projectsContainer');
+      const projects = getProjects(activeCategory || null);
+      if (!projects.length) {
+        container.innerHTML = '<div class="empty-state">No projects in this category yet.</div>';
+        return;
+      }
+      container.innerHTML = `<div class="projects-grid">${projects.map(renderProjectCard).join('')}</div>`;
+    }
+
+    document.getElementById('filterBar').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.dataset.cat;
+      renderAll();
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>

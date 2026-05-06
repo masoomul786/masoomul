@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commercial Web Apps — Masoomul Haque Choudhury</title>
+  <meta name="description" content="Commercial Web App projects by Masoomul Haque Choudhury.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div class="page-wrap">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <div class="section-header fade-up">
+      <div class="page-label">04 / Domain</div>
+      <h1 class="page-title">Commercial Web Apps</h1>
+      <p class="page-desc">Startups and platforms built for real-world users — from ride-sharing to inventory management.</p>
+    </div>
+    <hr class="thin-divider">
+    <div class="projects-section" id="projectsSection"></div>
+    <footer class="site-footer"><span>Masoomul Haque Choudhury &mdash; Built for GitHub Pages</span></footer>
+  </div>
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    document.getElementById('nav-placeholder').innerHTML = renderNav('');
+    initMobileNav();
+    renderProjectsSection('commercial', document.getElementById('projectsSection'));
+  </script>
+</body>
+</html>

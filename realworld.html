@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-World Problems — Masoomul Haque Choudhury</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .blog-grid-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 5rem; }
+    .blog-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .blog-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; text-decoration: none; color: var(--text); display: flex; flex-direction: column; transition: border-color 0.2s, transform 0.2s; }
+    .blog-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .blog-card-img { width: 100%; height: 200px; object-fit: cover; }
+    .blog-card-img-placeholder { width: 100%; height: 200px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+    .blog-card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .blog-cat { font-family: var(--mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; }
+    .blog-card-title { font-family: var(--mono); font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.35; margin-bottom: 0.75rem; }
+    .blog-card-summary { font-size: 0.85rem; color: var(--muted); line-height: 1.7; flex: 1; }
+    .blog-card-footer { margin-top: 1.25rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); display: flex; justify-content: space-between; }
+    .blog-card-read { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); margin-top: 1rem; }
+    .coming-soon-card { background: var(--card); border: 1px dashed var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; min-height: 280px; }
+    .coming-soon-card span { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.1em; }
+  </style>
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div class="page-wrap">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <div class="section-header fade-up">
+      <div class="page-label">05 / Domain</div>
+      <h1 class="page-title">Real-World Problems</h1>
+      <p class="page-desc">Ideas and solutions to global challenges — documented as blog posts and research notes.</p>
+    </div>
+    <hr class="thin-divider">
+
+    <div class="blog-grid-section">
+      <div class="blog-cards">
+
+        <a href="blogs/traffic.html" class="blog-card">
+          <img src="media/traffic.avif" alt="Traffic Camera AI" class="blog-card-img">
+          <div class="blog-card-body">
+            <div class="blog-cat">Smart Cities</div>
+            <div class="blog-card-title">Is Your Existing Traffic Camera Doing Enough? 🚗📸</div>
+            <p class="blog-card-summary">How AI can transform existing traffic cameras into real-time flood detection tools — using tire size as a reference ruler, with zero new infrastructure cost.</p>
+            <div class="blog-card-footer">
+              <span>2024-03-01</span>
+              <span>Smart Cities / AI</span>
+            </div>
+            <div class="blog-card-read">Read Article &rarr;</div>
+          </div>
+        </a>
+
+        <a href="blogs/OneToAll.html" class="blog-card">
+          <img src="media/onetoall.webp" alt="One To All Computing" class="blog-card-img">
+          <div class="blog-card-body">
+            <div class="blog-cat">Innovation</div>
+            <div class="blog-card-title">One-to-All Computing: A Universal Smart Device Controller 🌍</div>
+            <p class="blog-card-summary">A single powerful Master Controller replacing dozens of microcontrollers in smart home appliances — reducing costs, power use, and e-waste dramatically.</p>
+            <div class="blog-card-footer">
+              <span>2024-04-10</span>
+              <span>Innovation / IoT</span>
+            </div>
+            <div class="blog-card-read">Read Article &rarr;</div>
+          </div>
+        </a>
+
+        <div class="coming-soon-card">
+          <span>Coming Soon...</span>
+        </div>
+
+        <div class="coming-soon-card">
+          <span>Coming Soon...</span>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer"><span>Masoomul Haque Choudhury &mdash; Built for GitHub Pages</span></footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    document.getElementById('nav-placeholder').innerHTML = renderNav('');
+    initMobileNav();
+  </script>
+</body>
+</html>

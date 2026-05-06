@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — MHC Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .login-overlay { position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column; }
+    .login-box { background:var(--card);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;width:100%;max-width:380px;text-align:center; }
+    .login-box h2 { font-family:var(--mono);font-size:1rem;color:var(--accent);margin-bottom:0.5rem;letter-spacing:0.1em; }
+    .login-box p { font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem; }
+    .login-input { width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.7rem 1rem;color:var(--text);font-family:var(--mono);font-size:0.9rem;margin-bottom:1rem;outline:none;transition:border-color 0.2s;box-sizing:border-box; }
+    .login-input:focus { border-color:var(--accent); }
+    .login-btn { width:100%;background:var(--accent);color:#0a0a0f;border:none;border-radius:6px;padding:0.75rem;font-family:var(--mono);font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.05em;transition:opacity 0.2s; }
+    .login-btn:hover { opacity:0.88; }
+    .login-error { color:var(--accent2);font-size:0.8rem;margin-top:0.5rem;font-family:var(--mono);display:none; }
+    .login-lock { font-size:2.5rem;margin-bottom:1rem; }
+    .md-editor-wrap { border:1px solid var(--border);border-radius:6px;overflow:hidden; }
+    .md-editor-tabs { display:flex;border-bottom:1px solid var(--border);background:var(--bg2); }
+    .md-editor-tab { padding:0.5rem 1rem;font-family:var(--mono);font-size:0.75rem;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s; }
+    .md-editor-tab.active { color:var(--accent);border-bottom-color:var(--accent); }
+    .md-editor-toolbar { display:flex;gap:0.25rem;padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);flex-wrap:wrap; }
+    .md-tool-btn { background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:0.7rem;padding:0.25rem 0.5rem;cursor:pointer;transition:all 0.15s; }
+    .md-tool-btn:hover { border-color:var(--accent);color:var(--accent); }
+    .md-textarea { width:100%;min-height:300px;background:var(--bg);border:none;color:var(--text);font-family:var(--mono);font-size:0.85rem;padding:1rem;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6; }
+    .md-preview { min-height:300px;padding:1.5rem;background:var(--bg);display:none;overflow-y:auto; }
+    .md-upload-btn { display:inline-flex;align-items:center;gap:0.5rem;background:var(--bg2);border:1px dashed var(--border);border-radius:6px;padding:0.6rem 1rem;color:var(--muted);font-family:var(--mono);font-size:0.78rem;cursor:pointer;transition:all 0.2s;margin-top:0.5rem; }
+    .md-upload-btn:hover { border-color:var(--accent);color:var(--accent); }
+    .reorder-list { list-style:none;padding:0;margin:0; }
+    .reorder-item { display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:0.4rem;cursor:grab;transition:all 0.15s;user-select:none; }
+    .reorder-item:active { cursor:grabbing; }
+    .reorder-item.dragging { opacity:0.4;border-color:var(--accent); }
+    .reorder-item.drag-over { border-color:var(--accent);background:rgba(0,229,160,0.04); }
+    .reorder-handle { color:var(--muted);font-size:1rem;cursor:grab;flex-shrink:0; }
+    .reorder-title { flex:1;font-size:0.85rem;color:var(--text); }
+    .reorder-cat { font-family:var(--mono);font-size:0.68rem;color:var(--muted); }
+    .pin-toggle-btn { background:none;border:1px solid var(--border);border-radius:4px;padding:0.25rem 0.5rem;cursor:pointer;font-size:0.75rem;color:var(--muted);transition:all 0.2s;white-space:nowrap; }
+    .pin-toggle-btn.pinned { border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,0.08); }
+    .save-order-bar { display:flex;justify-content:flex-end;gap:0.75rem;padding:1rem 0;margin-top:0.5rem;border-top:1px solid var(--border); }
+    .blog-link-select { width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.7rem 1rem;color:var(--text);font-family:var(--mono);font-size:0.83rem;outline:none; }
+    .blog-link-select:focus { border-color:var(--accent); }
+    .blog-preview-pill { display:inline-flex;align-items:center;gap:0.5rem;background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.3);border-radius:20px;padding:0.3rem 0.8rem;font-family:var(--mono);font-size:0.72rem;color:var(--accent);margin-top:0.4rem; }
+    /* Category cards */
+    .cat-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1rem; }
+    .cat-card { background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem; }
+    .cat-icon { font-size:1.5rem;flex-shrink:0; }
+    .cat-info { flex:1; }
+    .cat-name { font-size:0.9rem;color:var(--text);font-weight:600; }
+    .cat-id { font-family:var(--mono);font-size:0.68rem;color:var(--muted); }
+    .cat-actions { display:flex;gap:0.5rem; }
+    /* Arrange by category tabs */
+    .cat-tabs { display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem; }
+    .cat-tab-btn { padding:0.4rem 0.85rem;font-family:var(--mono);font-size:0.72rem;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:none;color:var(--muted);transition:all 0.2s; }
+    .cat-tab-btn.active { border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,0.08); }
+    /* Home editor */
+    .home-form-grid { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
+    @media(max-width:640px){ .home-form-grid{grid-template-columns:1fr;} }
+    .home-section-title { font-family:var(--mono);font-size:0.78rem;color:var(--accent);letter-spacing:0.1em;margin:1.5rem 0 0.75rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border); }
+    .ticker-item-row { display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem; }
+    .ticker-item-row input { flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.75rem;color:var(--text);font-family:var(--mono);font-size:0.8rem;outline:none; }
+    .ticker-item-row input:focus { border-color:var(--accent); }
+    .ticker-del-btn { background:none;border:1px solid var(--border);border-radius:4px;padding:0.3rem 0.6rem;cursor:pointer;color:var(--accent2);font-size:0.75rem;transition:all 0.2s; }
+    .ticker-del-btn:hover { background:rgba(255,74,110,0.1); }
+  </style>
+</head>
+<body>
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <div class="login-lock">🔐</div>
+      <h2>ADMIN ACCESS</h2>
+      <p>Enter password to continue</p>
+      <input type="password" class="login-input" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="login-btn" onclick="doLogin()">Unlock Panel</button>
+      <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+    </div>
+  </div>
+
+  <nav class="site-nav">
+    <a href="index.html" class="nav-logo">MHC.dev</a>
+    <ul class="nav-links">
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span style="font-family:var(--mono);font-size:0.72rem;color:var(--accent);padding:0.3rem 0.7rem;border:1px solid rgba(0,229,160,0.3);border-radius:4px;">Admin</span>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-title">Admin Panel</div>
+        <button class="admin-nav-item active" onclick="showSection('dashboard',event)">&#9632; Dashboard</button>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);padding:0.75rem 1rem 0.25rem;letter-spacing:0.08em;">PROJECTS</div>
+        <button class="admin-nav-item" onclick="showSection('add-project',event)">+ Add Project</button>
+        <button class="admin-nav-item" onclick="showSection('manage-projects',event)">&#9776; Manage Projects</button>
+        <button class="admin-nav-item" onclick="showSection('arrange-projects',event)">⇅ Arrange Projects</button>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);padding:0.75rem 1rem 0.25rem;letter-spacing:0.08em;">CATEGORIES</div>
+        <button class="admin-nav-item" onclick="showSection('manage-categories',event)">⊞ Manage Categories</button>
+        <button class="admin-nav-item" onclick="showSection('collage-settings',event)">🖼 Collage Backgrounds</button>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);padding:0.75rem 1rem 0.25rem;letter-spacing:0.08em;">BLOG</div>
+        <button class="admin-nav-item" onclick="showSection('add-post',event)">+ Add Blog Post</button>
+        <button class="admin-nav-item" onclick="showSection('manage-posts',event)">&#9776; Manage Posts</button>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);padding:0.75rem 1rem 0.25rem;letter-spacing:0.08em;">HOMEPAGE</div>
+        <button class="admin-nav-item" onclick="showSection('home-editor',event)">✎ Edit Homepage</button>
+        <div style="border-top:1px solid var(--border);margin:1rem 0.75rem;"></div>
+        <button class="admin-nav-item" onclick="exportDataJS()" style="color:#4cc9f0;border:1px solid rgba(76,201,240,0.3);background:rgba(76,201,240,0.05);margin:0 0.5rem 0.25rem;">⬇ Export data.js</button>
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);padding:0 1rem 0.5rem;line-height:1.5;">Auto-downloads on every Save.<br>Upload to GitHub to go live.</div>
+        <button class="admin-nav-item" onclick="resetData()" style="color:var(--accent2);">&#8635; Reset to Defaults</button>
+        <button class="admin-nav-item" onclick="doLogout()" style="color:var(--muted);margin-top:0.5rem;">&#x2715; Logout</button>
+      </aside>
+
+      <main class="admin-main">
+
+        <!-- DASHBOARD -->
+        <div class="admin-section active" id="section-dashboard">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:2rem;">Dashboard</h1>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
+            <div class="admin-card" style="text-align:center;">
+              <div style="font-family:var(--mono);font-size:2.5rem;color:var(--accent);font-weight:700;" id="dash-projects">0</div>
+              <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">Projects</div>
+            </div>
+            <div class="admin-card" style="text-align:center;">
+              <div style="font-family:var(--mono);font-size:2.5rem;color:var(--accent2);font-weight:700;" id="dash-posts">0</div>
+              <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">Blog Posts</div>
+            </div>
+            <div class="admin-card" style="text-align:center;">
+              <div style="font-family:var(--mono);font-size:2.5rem;color:var(--accent);font-weight:700;" id="dash-pinned">0</div>
+              <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">Pinned</div>
+            </div>
+            <div class="admin-card" style="text-align:center;">
+              <div style="font-family:var(--mono);font-size:2.5rem;color:#4cc9f0;font-weight:700;" id="dash-cats">0</div>
+              <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">Categories</div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <h3 style="font-family:var(--mono);font-size:0.85rem;color:var(--text);margin-bottom:0.75rem;">Quick Actions</h3>
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+              <button class="btn-primary" onclick="showSection('add-project',{currentTarget:document.querySelectorAll('.admin-nav-item')[1]})">+ Add Project</button>
+              <button class="btn-ghost" onclick="showSection('add-post',{currentTarget:document.querySelectorAll('.admin-nav-item')[6]})">+ Add Post</button>
+              <button class="btn-ghost" onclick="showSection('arrange-projects',{currentTarget:document.querySelectorAll('.admin-nav-item')[3]})">⇅ Arrange</button>
+              <button class="btn-ghost" onclick="showSection('home-editor',{currentTarget:document.querySelectorAll('.admin-nav-item')[9]})">✎ Edit Homepage</button>
+              <a href="projects.html" target="_blank" class="btn-ghost">View Projects &nearr;</a>
+              <a href="index.html" target="_blank" class="btn-ghost">View Homepage &nearr;</a>
+            </div>
+          </div>
+          <div class="admin-card" style="margin-top:1rem;border-color:rgba(76,201,240,0.3);background:rgba(76,201,240,0.03);">
+            <h3 style="font-family:var(--mono);font-size:0.85rem;color:#4cc9f0;margin-bottom:0.75rem;">🌐 GitHub Pages — How to Publish Changes</h3>
+            <ol style="color:var(--muted);font-size:0.82rem;line-height:1.9;padding-left:1.25rem;margin:0;">
+              <li>Every time you press <strong style="color:var(--text);">Save</strong>, a <code style="background:var(--bg2);padding:0.1em 0.4em;border-radius:3px;">data.js</code> file is auto-downloaded.</li>
+              <li>Go to your <strong style="color:var(--text);">GitHub repo</strong> → click <code style="background:var(--bg2);padding:0.1em 0.4em;border-radius:3px;">data.js</code>.</li>
+              <li>Click the <strong style="color:var(--text);">✏️ pencil (Edit)</strong> icon → select all → paste the downloaded file.</li>
+              <li>Click <strong style="color:var(--text);">"Commit changes"</strong> → GitHub Pages rebuilds in ~30 seconds.</li>
+              <li>Changes are now live for <strong style="color:var(--text);">all visitors</strong>! 🎉</li>
+            </ol>
+            <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);">
+              <button class="btn-ghost" onclick="exportDataJS()" style="color:#4cc9f0;border-color:rgba(76,201,240,0.3);">⬇ Export data.js Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADD / EDIT PROJECT -->
+        <div class="admin-section" id="section-add-project">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:2rem;" id="project-form-title">Add Project</h1>
+          <div id="project-alert" class="alert"></div>
+          <div class="admin-card">
+            <div class="form-row">
+              <div class="admin-form-group">
+                <label>Project Title *</label>
+                <input type="text" class="admin-input" id="p-title" placeholder="e.g. AI Kill Switch">
+              </div>
+              <div class="admin-form-group">
+                <label>Category *</label>
+                <select class="admin-select" id="p-category">
+                  <option value="">Select category</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-form-group">
+              <label>Description *</label>
+              <textarea class="admin-input admin-textarea" id="p-desc" placeholder="Describe the project..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="admin-form-group">
+                <label>Date</label>
+                <input type="date" class="admin-input" id="p-date">
+              </div>
+              <div class="admin-form-group">
+                <label>Project Link / GitHub URL</label>
+                <input type="url" class="admin-input" id="p-link" placeholder="https://github.com/...">
+              </div>
+            </div>
+            <div class="admin-form-group">
+              <label>Tags <span style="color:var(--muted);font-size:0.75rem;">(press Enter or comma to add)</span></label>
+              <div class="tag-input-wrap" id="p-tags-wrap">
+                <input type="text" id="p-tags-input" placeholder="Add tag...">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="admin-form-group">
+                <label>Media Paths <span style="color:var(--muted);font-size:0.75rem;">(one per line)</span></label>
+                <textarea class="admin-input admin-textarea" id="p-media" placeholder="media/image1.jpg&#10;media/image2.jpg" style="min-height:80px;"></textarea>
+              </div>
+              <div class="admin-form-group">
+                <label>Video Path</label>
+                <input type="text" class="admin-input" id="p-video" placeholder="media/demo.mp4">
+              </div>
+            </div>
+            <div class="admin-form-group">
+              <label>Link to Blog Post</label>
+              <select class="blog-link-select" id="p-blog-id" onchange="updateBlogPreview()">
+                <option value="">— No blog post linked —</option>
+              </select>
+              <div class="blog-preview-pill" id="blog-preview-pill" style="display:none;">
+                📖 <span id="blog-preview-title"></span>
+              </div>
+            </div>
+            <input type="hidden" id="p-edit-id">
+            <div style="display:flex;gap:0.75rem;margin-top:1rem;">
+              <button class="btn-primary" onclick="saveProjectForm()">Save Project</button>
+              <button class="btn-ghost" onclick="clearProjectForm()">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MANAGE PROJECTS -->
+        <div class="admin-section" id="section-manage-projects">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:1rem;">Manage Projects</h1>
+          <div id="manage-projects-alert" class="alert"></div>
+          <div class="admin-card" style="padding:0;overflow:hidden;">
+            <div id="projects-table-wrap"></div>
+          </div>
+        </div>
+
+        <!-- ARRANGE PROJECTS (per category) -->
+        <div class="admin-section" id="section-arrange-projects">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:1rem;">Arrange Projects</h1>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.25rem;">Drag to reorder within each category. Pin projects to feature them at the top.</p>
+          <div id="arrange-alert" class="alert"></div>
+          <div class="admin-card" style="margin-bottom:1rem;">
+            <div class="cat-tabs" id="arrangeCatTabs"></div>
+            <ul class="reorder-list" id="reorderList"></ul>
+            <div class="save-order-bar">
+              <button class="btn-ghost" onclick="renderArrangeSection()">Reset View</button>
+              <button class="btn-primary" onclick="saveOrder()">Save Order</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MANAGE CATEGORIES -->
+        <div class="admin-section" id="section-manage-categories">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:1rem;">Manage Categories</h1>
+          <div id="cat-alert" class="alert"></div>
+          <div class="admin-card" style="margin-bottom:1.5rem;">
+            <h3 style="font-family:var(--mono);font-size:0.82rem;color:var(--text);margin-bottom:1rem;" id="cat-form-title">Add New Category</h3>
+            <div class="form-row">
+              <div class="admin-form-group">
+                <label>Category Name *</label>
+                <input type="text" class="admin-input" id="cat-name" placeholder="e.g. Machine Learning">
+              </div>
+              <div class="admin-form-group">
+                <label>Slug / ID * <span style="color:var(--muted);font-size:0.72rem;">(lowercase, no spaces)</span></label>
+                <input type="text" class="admin-input" id="cat-id" placeholder="e.g. machine-learning">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="admin-form-group">
+                <label>Icon (emoji)</label>
+                <input type="text" class="admin-input" id="cat-icon" placeholder="🤖" maxlength="4">
+              </div>
+              <div class="admin-form-group">
+                <label>Accent Color (hex)</label>
+                <input type="text" class="admin-input" id="cat-color" placeholder="#00e5a0">
+              </div>
+            </div>
+            <input type="hidden" id="cat-edit-id">
+            <div style="display:flex;gap:0.75rem;margin-top:0.75rem;">
+              <button class="btn-primary" onclick="saveCategoryForm()">Save Category</button>
+              <button class="btn-ghost" onclick="clearCategoryForm()">Clear</button>
+            </div>
+          </div>
+          <div id="cat-cards-wrap" class="cat-grid"></div>
+        </div>
+
+        <!-- COLLAGE SETTINGS -->
+        <div class="admin-section" id="section-collage-settings">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:1rem;">Collage Backgrounds</h1>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">Enable a photo collage background on each category card on the home page. Photos are sourced from project media in that category.</p>
+          <div id="collage-alert" class="alert"></div>
+          <div id="collage-cards-wrap"></div>
+        </div>
+
+        <!-- ADD / EDIT BLOG POST -->
+        <div class="admin-section" id="section-add-post">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:2rem;" id="post-form-title">Add Blog Post</h1>
+          <div id="post-alert" class="alert"></div>
+          <div class="admin-card">
+            <div class="form-row">
+              <div class="admin-form-group">
+                <label>Post Title *</label>
+                <input type="text" class="admin-input" id="b-title" placeholder="e.g. How AI Transforms X...">
+              </div>
+              <div class="admin-form-group">
+                <label>Category</label>
+                <input type="text" class="admin-input" id="b-category" placeholder="e.g. Innovation, AI, Research">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="admin-form-group">
+                <label>Date</label>
+                <input type="date" class="admin-input" id="b-date">
+              </div>
+              <div class="admin-form-group">
+                <label>Cover Image Path</label>
+                <input type="text" class="admin-input" id="b-media" placeholder="media/cover.jpg">
+              </div>
+            </div>
+            <div class="admin-form-group">
+              <label>Summary *</label>
+              <textarea class="admin-input admin-textarea" id="b-summary" placeholder="Brief summary shown on blog listing..." style="min-height:80px;"></textarea>
+            </div>
+            <div class="admin-form-group">
+              <label>Content (Markdown)</label>
+              <div class="md-editor-wrap">
+                <div class="md-editor-tabs">
+                  <button class="md-editor-tab active" id="tab-write" onclick="switchTab('write')">Write</button>
+                  <button class="md-editor-tab" id="tab-preview" onclick="switchTab('preview')">Preview</button>
+                </div>
+                <div class="md-editor-toolbar">
+                  <button class="md-tool-btn" onclick="mdWrap('**','**')">B</button>
+                  <button class="md-tool-btn" onclick="mdWrap('*','*')"><em>I</em></button>
+                  <button class="md-tool-btn" onclick="mdInsert('# ','')">H1</button>
+                  <button class="md-tool-btn" onclick="mdInsert('## ','')">H2</button>
+                  <button class="md-tool-btn" onclick="mdInsert('### ','')">H3</button>
+                  <button class="md-tool-btn" onclick="mdWrap('`','`')">Code</button>
+                  <button class="md-tool-btn" onclick="mdInsert('> ','')">Quote</button>
+                  <button class="md-tool-btn" onclick="mdInsert('- ','')">List</button>
+                  <button class="md-tool-btn" onclick="mdInsert('[text](url)','')">Link</button>
+                  <label class="md-upload-btn">📎 Upload .md <input type="file" accept=".md,.txt" style="display:none;" onchange="uploadMdFile(event)"></label>
+                </div>
+                <textarea class="md-textarea" id="b-content" placeholder="Write your post in Markdown..."></textarea>
+                <div class="md-preview" id="md-preview-pane"></div>
+              </div>
+            </div>
+            <input type="hidden" id="b-edit-id">
+            <div style="display:flex;gap:0.75rem;margin-top:1rem;">
+              <button class="btn-primary" onclick="savePostForm()">Save Post</button>
+              <button class="btn-ghost" onclick="clearPostForm()">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MANAGE POSTS -->
+        <div class="admin-section" id="section-manage-posts">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:1rem;">Manage Blog Posts</h1>
+          <div id="manage-posts-alert" class="alert"></div>
+          <div class="admin-card" style="padding:0;overflow:hidden;">
+            <div id="posts-table-wrap"></div>
+          </div>
+        </div>
+
+        <!-- HOME EDITOR -->
+        <div class="admin-section" id="section-home-editor">
+          <div class="page-label">Admin</div>
+          <h1 class="page-title" style="margin-bottom:1rem;">Edit Homepage</h1>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">Changes are saved to localStorage and applied to your homepage automatically.</p>
+          <div id="home-alert" class="alert"></div>
+
+          <div class="admin-card" style="margin-bottom:1.5rem;">
+            <div class="home-section-title">HERO SECTION</div>
+            <div class="home-form-grid">
+              <div class="admin-form-group">
+                <label>Badge Text</label>
+                <input type="text" class="admin-input" id="h-badge" placeholder="Open to Collaboration...">
+              </div>
+              <div class="admin-form-group">
+                <label>Title Tag Line</label>
+                <input type="text" class="admin-input" id="h-titletag" placeholder="AI Researcher · Security Expert">
+              </div>
+              <div class="admin-form-group">
+                <label>Name (Part 1)</label>
+                <input type="text" class="admin-input" id="h-name1" placeholder="Masoomul">
+              </div>
+              <div class="admin-form-group">
+                <label>Name (Part 2)</label>
+                <input type="text" class="admin-input" id="h-name2" placeholder="Haque">
+              </div>
+              <div class="admin-form-group">
+                <label>Accent Word (highlighted)</label>
+                <input type="text" class="admin-input" id="h-accentword" placeholder="Choudhury">
+              </div>
+            </div>
+            <div class="admin-form-group" style="margin-top:0.75rem;">
+              <label>Manifesto / Intro Paragraph <span style="color:var(--muted);font-size:0.72rem;">(HTML allowed, use &lt;strong&gt; for bold)</span></label>
+              <textarea class="admin-input admin-textarea" id="h-manifesto" style="min-height:100px;"></textarea>
+            </div>
+
+            <div class="home-section-title">TERMINAL STATS</div>
+            <div class="home-form-grid">
+              <div class="admin-form-group">
+                <label>Projects Count</label>
+                <input type="text" class="admin-input" id="h-stat-projects" placeholder="14">
+              </div>
+              <div class="admin-form-group">
+                <label>Awards Count</label>
+                <input type="text" class="admin-input" id="h-stat-awards" placeholder="2+">
+              </div>
+              <div class="admin-form-group">
+                <label>Domains Count</label>
+                <input type="text" class="admin-input" id="h-stat-domains" placeholder="7">
+              </div>
+              <div class="admin-form-group">
+                <label>Patents Count</label>
+                <input type="text" class="admin-input" id="h-stat-patents" placeholder="1">
+              </div>
+              <div class="admin-form-group" style="grid-column:1/-1;">
+                <label>Mission Statement (terminal output)</label>
+                <input type="text" class="admin-input" id="h-mission" placeholder="✓ Becoming the greatest problem solver...">
+              </div>
+            </div>
+
+            <div class="home-section-title">ABOUT SECTION</div>
+            <div class="admin-form-group">
+              <label>About Title <span style="color:var(--muted);font-size:0.72rem;">(HTML allowed, use &lt;em&gt; for italic)</span></label>
+              <input type="text" class="admin-input" id="h-about-title" placeholder="Who is &lt;em&gt;MHC?&lt;/em&gt;">
+            </div>
+            <div class="admin-form-group">
+              <label>About Intro Paragraph</label>
+              <textarea class="admin-input admin-textarea" id="h-about-intro" style="min-height:80px;"></textarea>
+            </div>
+
+            <div class="home-section-title">ACHIEVEMENT TICKER</div>
+            <p style="color:var(--muted);font-size:0.78rem;margin-bottom:0.75rem;">Each line scrolls across the ticker strip on your homepage.</p>
+            <div id="ticker-items-wrap"></div>
+            <button class="btn-ghost" style="margin-top:0.5rem;font-size:0.78rem;" onclick="addTickerItem()">+ Add Ticker Item</button>
+
+            <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+              <button class="btn-primary" onclick="saveHomeForm()">💾 Save Homepage</button>
+              <button class="btn-ghost" onclick="loadHomeForm()">↺ Reload from Saved</button>
+              <a href="index.html" target="_blank" class="btn-ghost">Preview &nearr;</a>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    // ===== AUTH =====
+    const SESSION_KEY = 'mhc_admin_v2';
+    const ADMIN_PASS  = 'Dante@786';
+
+    function doLogin() {
+      const pass = document.getElementById('loginPass').value;
+      if (pass === ADMIN_PASS) {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        document.getElementById('loginOverlay').style.display = 'none';
+        onAdminReady();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+    function doLogout() { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
+
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+      document.getElementById('loginOverlay').style.display = 'none';
+    }
+
+    // ===== SECTION NAVIGATION =====
+    function showSection(id, e) {
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'));
+      document.getElementById('section-' + id).classList.add('active');
+      if (e && e.currentTarget) e.currentTarget.classList.add('active');
+      // refresh on open
+      if (id === 'manage-projects') renderProjectsTable();
+      if (id === 'manage-posts')    renderPostsTable();
+      if (id === 'arrange-projects') renderArrangeSection();
+      if (id === 'manage-categories') renderCategoryCards();
+      if (id === 'collage-settings')   renderCollageSettings();
+      if (id === 'add-project')     { refreshCategoryNames(); populateCategorySelect(); populateBlogSelect(); }
+      if (id === 'home-editor')     loadHomeForm();
+    }
+
+    function onAdminReady() {
+      refreshCategoryNames();
+      updateDash();
+      populateBlogSelect();
+    }
+
+    function updateDash() {
+      const projects = getProjects();
+      document.getElementById('dash-projects').textContent = projects.length;
+      document.getElementById('dash-posts').textContent = getPosts().length;
+      document.getElementById('dash-pinned').textContent = projects.filter(p => p.pinned).length;
+      document.getElementById('dash-cats').textContent = getCategories().length;
+    }
+
+    if (sessionStorage.getItem(SESSION_KEY) === '1') { onAdminReady(); }
+
+    // ===== BLOG SELECT =====
+    function populateBlogSelect() {
+      const sel = document.getElementById('p-blog-id');
+      if (!sel) return;
+      const current = sel.value;
+      const posts = getPosts();
+      sel.innerHTML = '<option value="">— No blog post linked —</option>' +
+        posts.map(p => `<option value="${p.id}" ${p.id === current ? 'selected' : ''}>${p.title}</option>`).join('');
+      updateBlogPreview();
+    }
+    function updateBlogPreview() {
+      const sel = document.getElementById('p-blog-id');
+      const pill = document.getElementById('blog-preview-pill');
+      const title = document.getElementById('blog-preview-title');
+      if (!sel || !pill || !title) return;
+      if (sel.value) {
+        const post = getPosts().find(p => p.id === sel.value);
+        if (post) { title.textContent = post.title; pill.style.display = 'inline-flex'; return; }
+      }
+      pill.style.display = 'none';
+    }
+
+    // ===== CATEGORY SELECT in project form =====
+    function populateCategorySelect(currentVal) {
+      const sel = document.getElementById('p-category');
+      const cats = getCategories();
+      sel.innerHTML = '<option value="">Select category</option>' +
+        cats.map(c => `<option value="${c.id}" ${c.id === currentVal ? 'selected' : ''}>${c.icon} ${c.name}</option>`).join('');
+    }
+
+    // ===== TAGS =====
+    let projectTags = [];
+    function renderTags() {
+      const wrap = document.getElementById('p-tags-wrap');
+      const input = document.getElementById('p-tags-input');
+      wrap.querySelectorAll('.tag-chip').forEach(c => c.remove());
+      projectTags.forEach((t, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `${t} <button type="button" onclick="removeTag(${i})">&times;</button>`;
+        wrap.insertBefore(chip, input);
+      });
+    }
+    function removeTag(i) { projectTags.splice(i, 1); renderTags(); }
+    document.getElementById('p-tags-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const v = e.target.value.replace(',', '').trim();
+        if (v && !projectTags.includes(v)) { projectTags.push(v); renderTags(); }
+        e.target.value = '';
+      }
+    });
+
+    // ===== PROJECT FORM =====
+    function clearProjectForm() {
+      ['p-title','p-desc','p-date','p-link','p-media','p-video','p-edit-id'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      populateCategorySelect();
+      document.getElementById('p-blog-id').value = '';
+      updateBlogPreview();
+      projectTags = []; renderTags();
+      document.getElementById('project-form-title').textContent = 'Add Project';
+      hideAlert('project-alert');
+    }
+
+    function saveProjectForm() {
+      const title    = document.getElementById('p-title').value.trim();
+      const category = document.getElementById('p-category').value;
+      const desc     = document.getElementById('p-desc').value.trim();
+      if (!title || !category || !desc) {
+        showAlert('project-alert', 'Please fill in title, category, and description.', 'error'); return;
+      }
+      const editId    = document.getElementById('p-edit-id').value;
+      const mediaRaw  = document.getElementById('p-media').value.trim();
+      const media     = mediaRaw ? mediaRaw.split('\n').map(s => s.trim()).filter(Boolean) : [];
+      const existing  = editId ? getProjects().find(p => p.id === editId) : null;
+      // Enforce: project belongs to exactly ONE category (hardcoded - no duplicates possible via single select)
+      const project   = {
+        id: editId || genId(), title,
+        category: category, // single category only
+        description: desc, tags: [...projectTags],
+        date: document.getElementById('p-date').value,
+        link: document.getElementById('p-link').value.trim(),
+        blogId: document.getElementById('p-blog-id').value,
+        media, video: document.getElementById('p-video').value.trim(),
+        pinned: existing ? existing.pinned : false,
+        order: existing ? existing.order : 9999
+      };
+      saveProject(project);
+      refreshCategoryNames();
+      showAlert('project-alert', `✓ Project "${title}" saved! Click "⬇ Export data.js" in the sidebar to make changes permanent for all visitors.`, 'success');
+      clearProjectForm(); updateDash();
+      autoExportDataJS();
+    }
+
+    function editProject(id) {
+      const p = getProjects().find(x => x.id === id);
+      if (!p) return;
+      refreshCategoryNames();
+      populateCategorySelect(p.category);
+      document.getElementById('p-title').value = p.title;
+      document.getElementById('p-desc').value  = p.description;
+      document.getElementById('p-date').value  = p.date || '';
+      document.getElementById('p-link').value  = p.link || '';
+      document.getElementById('p-media').value = (p.media || []).join('\n');
+      document.getElementById('p-video').value = p.video || '';
+      document.getElementById('p-edit-id').value = p.id;
+      populateBlogSelect();
+      setTimeout(() => { document.getElementById('p-blog-id').value = p.blogId || ''; updateBlogPreview(); }, 50);
+      projectTags = [...(p.tags || [])]; renderTags();
+      document.getElementById('project-form-title').textContent = 'Edit Project';
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('section-add-project').classList.add('active');
+    }
+
+    function renderProjectsTable() {
+      refreshCategoryNames();
+      const projects = getProjects();
+      const wrap = document.getElementById('projects-table-wrap');
+      if (!projects.length) { wrap.innerHTML = '<div class="empty-state">No projects yet.</div>'; return; }
+      wrap.innerHTML = `
+        <table class="admin-table">
+          <thead><tr><th>Title</th><th>Category</th><th>Pinned</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${projects.map(p => `<tr>
+              <td><strong>${p.title}</strong></td>
+              <td><span style="font-family:var(--mono);font-size:0.7rem;color:var(--muted);">${CATEGORY_NAMES[p.category] || p.category}</span></td>
+              <td>${p.pinned ? '<span style="color:var(--accent);">📌</span>' : '<span style="color:var(--muted);">—</span>'}</td>
+              <td style="font-family:var(--mono);font-size:0.7rem;color:var(--muted);">${p.date || '—'}</td>
+              <td style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <button class="btn-edit" onclick="editProject('${p.id}')">Edit</button>
+                <button class="btn-danger" onclick="confirmDeleteProject('${p.id}','${p.title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function confirmDeleteProject(id, title) {
+      if (confirm(`Delete project "${title}"?`)) {
+        deleteProject(id); renderProjectsTable(); updateDash();
+        showAlert('manage-projects-alert', `"${title}" deleted.`, 'success');
+        autoExportDataJS();
+      }
+    }
+
+    // ===== ARRANGE BY CATEGORY =====
+    let arrangeCat = '__all__';
+    let dragSrcEl = null;
+
+    function renderArrangeSection() {
+      refreshCategoryNames();
+      const cats  = getCategories();
+      const tabs  = document.getElementById('arrangeCatTabs');
+      tabs.innerHTML = `<button class="cat-tab-btn ${arrangeCat==='__all__'?'active':''}" onclick="setArrangeCat('__all__')">All</button>` +
+        cats.map(c => `<button class="cat-tab-btn ${arrangeCat===c.id?'active':''}" onclick="setArrangeCat('${c.id}')">${c.icon} ${c.name}</button>`).join('');
+      const all = arrangeCat === '__all__' ? getProjects() : getProjects(arrangeCat);
+      const list = document.getElementById('reorderList');
+      list.innerHTML = '';
+      if (!all.length) { list.innerHTML = '<li style="color:var(--muted);font-size:0.85rem;padding:1rem;">No projects in this category.</li>'; return; }
+      all.forEach(p => {
+        const li = document.createElement('li');
+        li.className = 'reorder-item'; li.dataset.id = p.id; li.draggable = true;
+        li.innerHTML = `<span class="reorder-handle">⠿</span>
+          <div style="flex:1;">
+            <div class="reorder-title">${p.title}</div>
+            <div class="reorder-cat">${CATEGORY_NAMES[p.category] || p.category}</div>
+          </div>
+          <button class="pin-toggle-btn ${p.pinned?'pinned':''}" onclick="togglePin('${p.id}',this)">
+            ${p.pinned ? '📌 Pinned' : '📍 Pin'}
+          </button>`;
+        li.addEventListener('dragstart', e => { dragSrcEl=li; e.dataTransfer.effectAllowed='move'; setTimeout(()=>li.classList.add('dragging'),0); });
+        li.addEventListener('dragend',   () => li.classList.remove('dragging'));
+        li.addEventListener('dragover',  e => { e.preventDefault(); li.classList.add('drag-over'); });
+        li.addEventListener('dragleave', () => li.classList.remove('drag-over'));
+        li.addEventListener('drop', e => {
+          e.preventDefault(); li.classList.remove('drag-over');
+          if (dragSrcEl && dragSrcEl !== li) {
+            const items=[...list.querySelectorAll('.reorder-item')];
+            if(items.indexOf(dragSrcEl)<items.indexOf(li)) li.after(dragSrcEl); else li.before(dragSrcEl);
+          }
+        });
+        list.appendChild(li);
+      });
+    }
+
+    function setArrangeCat(catId) { arrangeCat = catId; renderArrangeSection(); }
+
+    function togglePin(id, btn) {
+      togglePinProject(id);
+      const p = getProjects().find(x => x.id === id);
+      if (p) { btn.className=`pin-toggle-btn ${p.pinned?'pinned':''}`; btn.textContent=p.pinned?'📌 Pinned':'📍 Pin'; }
+      updateDash();
+    }
+
+    function saveOrder() {
+      const ids = [...document.querySelectorAll('#reorderList .reorder-item')].map(li => li.dataset.id);
+      saveProjectsOrder(ids);
+      showAlert('arrange-alert', '✓ Order saved!', 'success'); updateDash();
+      autoExportDataJS();
+    }
+
+    // ===== MANAGE CATEGORIES =====
+    function renderCategoryCards() {
+      const cats = getCategories();
+      const wrap = document.getElementById('cat-cards-wrap');
+      if (!cats.length) { wrap.innerHTML = '<div class="empty-state">No categories yet.</div>'; return; }
+      wrap.innerHTML = cats.map(c => `
+        <div class="cat-card">
+          <div class="cat-icon">${c.icon}</div>
+          <div class="cat-info">
+            <div class="cat-name">${c.name}</div>
+            <div class="cat-id">${c.id}</div>
+          </div>
+          <div class="cat-actions">
+            <button class="btn-edit" onclick="editCategory('${c.id}')">Edit</button>
+            <button class="btn-danger" onclick="confirmDeleteCategory('${c.id}','${c.name.replace(/'/g,"\\'")}')">Del</button>
+          </div>
+        </div>`).join('');
+    }
+
+    function clearCategoryForm() {
+      ['cat-name','cat-id','cat-icon','cat-color','cat-edit-id'].forEach(id => {
+        const el=document.getElementById(id); if(el)el.value='';
+      });
+      document.getElementById('cat-form-title').textContent = 'Add New Category';
+      hideAlert('cat-alert');
+    }
+
+    function saveCategoryForm() {
+      const name  = document.getElementById('cat-name').value.trim();
+      const rawId = document.getElementById('cat-id').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');
+      const icon  = document.getElementById('cat-icon').value.trim() || '📁';
+      const color = document.getElementById('cat-color').value.trim() || '#00e5a0';
+      const editId= document.getElementById('cat-edit-id').value;
+      if (!name || !rawId) { showAlert('cat-alert','Name and Slug are required.','error'); return; }
+      const cats  = getCategories();
+      if (!editId && cats.find(c => c.id === rawId)) { showAlert('cat-alert','A category with this slug already exists.','error'); return; }
+      if (editId) {
+        const idx = cats.findIndex(c => c.id === editId);
+        if (idx >= 0) {
+          const oldId = cats[idx].id;
+          cats[idx] = { ...cats[idx], name, icon, color };
+          // If slug changed, migrate all projects from old category ID to new one
+          if (oldId !== rawId) {
+            cats[idx].id = rawId;
+            const all = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS) || '[]');
+            let changed = false;
+            all.forEach(p => { if (p.category === oldId) { p.category = rawId; changed = true; } });
+            if (changed) localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(all));
+          }
+        }
+      } else {
+        cats.push({ id: rawId, name, icon, color });
+      }
+      saveCategories(cats);
+      refreshCategoryNames();
+      showAlert('cat-alert', `✓ Category "${name}" saved! Changes applied to all projects. Click "⬇ Export data.js" to make permanent.`, 'success');
+      clearCategoryForm(); renderCategoryCards(); updateDash();
+      autoExportDataJS();
+    }
+
+    function editCategory(id) {
+      const c = getCategories().find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('cat-name').value  = c.name;
+      document.getElementById('cat-id').value    = c.id;
+      document.getElementById('cat-icon').value  = c.icon;
+      document.getElementById('cat-color').value = c.color || '';
+      document.getElementById('cat-edit-id').value = c.id;
+      document.getElementById('cat-form-title').textContent = 'Edit Category';
+    }
+
+    function confirmDeleteCategory(id, name) {
+      const projs = getProjects(id);
+      const msg = projs.length
+        ? `Delete category "${name}"? It has ${projs.length} project(s) — they will keep their category ID but won't appear in filters.`
+        : `Delete category "${name}"?`;
+      if (confirm(msg)) {
+        const cats = getCategories().filter(c => c.id !== id);
+        saveCategories(cats); refreshCategoryNames();
+        renderCategoryCards(); updateDash();
+        showAlert('cat-alert', `✓ "${name}" deleted.`, 'success');
+        autoExportDataJS();
+      }
+    }
+
+    // ===== COLLAGE SETTINGS =====
+    function renderCollageSettings() {
+      const cats = getCategories();
+      const wrap = document.getElementById('collage-cards-wrap');
+      if (!wrap) return;
+      if (!cats.length) { wrap.innerHTML = '<div class="empty-state">No categories yet.</div>'; return; }
+
+      wrap.innerHTML = cats.map(c => {
+        const cfg = getCategoryCollage(c.id);
+        const projs = getProjects(c.id);
+        // collect all photo media from projects in this category
+        const allPhotos = [];
+        projs.forEach(p => {
+          if (p.media && p.media.length) p.media.forEach(m => { if (!allPhotos.includes(m)) allPhotos.push(m); });
+        });
+        const photosHtml = allPhotos.length
+          ? allPhotos.map((src, idx) => {
+              const checked = cfg.photos && cfg.photos.includes(src) ? 'checked' : '';
+              return `<label style="display:inline-flex;align-items:center;gap:0.4rem;margin:0.3rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.6rem;cursor:pointer;font-size:0.75rem;font-family:var(--mono);">
+                <input type="checkbox" ${checked} data-photo="${src}" onchange="updateCollagePhoto('${c.id}',this.dataset.photo,this.checked)">
+                <img src="${src}" style="width:32px;height:32px;object-fit:cover;border-radius:3px;" loading="lazy">
+                <span style="color:var(--muted);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${src.split('/').pop()}</span>
+              </label>`;
+            }).join('')
+          : '<span style="color:var(--muted);font-size:0.8rem;font-family:var(--mono);">No project photos in this category yet.</span>';
+
+        return `<div class="admin-card" style="margin-bottom:1.25rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+            <span style="font-size:1.4rem;">${c.icon}</span>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;">${c.name}</div>
+              <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);">${c.id}</div>
+            </div>
+            <label style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-family:var(--mono);font-size:0.78rem;">
+              <input type="checkbox" ${cfg.enabled ? 'checked' : ''} onchange="updateCollageEnabled('${c.id}',this.checked)" style="accent-color:var(--accent);">
+              Enable Collage
+            </label>
+          </div>
+          <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;">
+            <div style="flex:1;min-width:180px;">
+              <label style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Blur Amount: <span id="blur-val-${c.id}">${cfg.blur !== undefined ? cfg.blur : 8}</span>px</label>
+              <input type="range" min="0" max="20" value="${cfg.blur !== undefined ? cfg.blur : 8}" step="1"
+                style="width:100%;accent-color:var(--accent);"
+                oninput="document.getElementById('blur-val-${c.id}').textContent=this.value; updateCollageProp('${c.id}','blur',+this.value)">
+            </div>
+            <div style="flex:1;min-width:180px;">
+              <label style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Overlay Darkness: <span id="opacity-val-${c.id}">${Math.round((cfg.opacity !== undefined ? cfg.opacity : 0.75) * 100)}</span>%</label>
+              <input type="range" min="0" max="100" value="${Math.round((cfg.opacity !== undefined ? cfg.opacity : 0.75) * 100)}" step="5"
+                style="width:100%;accent-color:var(--accent);"
+                oninput="document.getElementById('opacity-val-${c.id}').textContent=this.value; updateCollageProp('${c.id}','opacity',this.value/100)">
+            </div>
+            <div style="flex:1;min-width:150px;">
+              <label style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Grid Columns: <span id="cols-val-${c.id}">${cfg.cols || 3}</span></label>
+              <input type="range" min="1" max="6" value="${cfg.cols || 3}" step="1"
+                style="width:100%;accent-color:var(--accent);"
+                oninput="document.getElementById('cols-val-${c.id}').textContent=this.value; updateCollageProp('${c.id}','cols',+this.value)">
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Select Photos to Show:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">${photosHtml}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function updateCollageEnabled(catId, enabled) {
+      setCategoryCollage(catId, { enabled });
+      showAlert('collage-alert', 'Saved!', 'success');
+      setTimeout(() => hideAlert('collage-alert'), 1500);
+    }
+
+    function updateCollageProp(catId, prop, value) {
+      const upd = {};
+      upd[prop] = value;
+      setCategoryCollage(catId, upd);
+    }
+
+    function updateCollagePhoto(catId, src, checked) {
+      const cfg = getCategoryCollage(catId);
+      let photos = cfg.photos ? [...cfg.photos] : [];
+      if (checked && !photos.includes(src)) photos.push(src);
+      else if (!checked) photos = photos.filter(p => p !== src);
+      setCategoryCollage(catId, { photos });
+      showAlert('collage-alert', 'Photo selection saved!', 'success');
+      setTimeout(() => hideAlert('collage-alert'), 1500);
+    }
+
+    // ===== MARKDOWN EDITOR =====
+    let mdTab = 'write';
+    function switchTab(tab) {
+      mdTab = tab;
+      document.getElementById('tab-write').className   = 'md-editor-tab' + (tab==='write'?' active':'');
+      document.getElementById('tab-preview').className = 'md-editor-tab' + (tab==='preview'?' active':'');
+      const ta=document.getElementById('b-content'), prev=document.getElementById('md-preview-pane');
+      if (tab==='write') { ta.style.display='block'; prev.style.display='none'; }
+      else { ta.style.display='none'; prev.style.display='block'; prev.innerHTML=renderMarkdown(ta.value)||'<p style="color:var(--muted);">Nothing to preview yet.</p>'; }
+    }
+    function mdInsert(prefix, suffix) {
+      const ta=document.getElementById('b-content'), s=ta.selectionStart, e=ta.selectionEnd, v=ta.value;
+      const sel=v.slice(s,e), ins=prefix+(sel||'text')+suffix;
+      ta.value=v.slice(0,s)+ins+v.slice(e); ta.focus();
+      ta.selectionStart=s+prefix.length; ta.selectionEnd=s+prefix.length+(sel||'text').length;
+    }
+    function mdWrap(p,s){ mdInsert(p,s); }
+    function uploadMdFile(e) {
+      const file=e.target.files[0]; if(!file)return;
+      const r=new FileReader();
+      r.onload=evt=>{ document.getElementById('b-content').value=evt.target.result; if(mdTab==='preview')switchTab('preview'); };
+      r.readAsText(file); e.target.value='';
+    }
+
+    // ===== POST FORM =====
+    function clearPostForm() {
+      ['b-title','b-category','b-date','b-media','b-summary','b-content','b-edit-id'].forEach(id=>{
+        const el=document.getElementById(id); if(el)el.value='';
+      });
+      document.getElementById('post-form-title').textContent='Add Blog Post';
+      if(mdTab==='preview')switchTab('write'); hideAlert('post-alert');
+    }
+    function savePostForm() {
+      const title  =document.getElementById('b-title').value.trim();
+      const summary=document.getElementById('b-summary').value.trim();
+      if (!title||!summary){ showAlert('post-alert','Please fill in title and summary.','error'); return; }
+      const editId=document.getElementById('b-edit-id').value;
+      const post={ id:editId||genId(), title, summary,
+        content: document.getElementById('b-content').value.trim(),
+        category: document.getElementById('b-category').value.trim()||'General',
+        date: document.getElementById('b-date').value,
+        media: document.getElementById('b-media').value.trim() };
+      savePost(post); showAlert('post-alert',`✓ Post "${title}" saved! Click "⬇ Export data.js" to make permanent.`,'success');
+      clearPostForm(); updateDash();
+      autoExportDataJS();
+    }
+    function editPost(id) {
+      const p=getPosts().find(x=>x.id===id); if(!p)return;
+      document.getElementById('b-title').value   =p.title;
+      document.getElementById('b-category').value=p.category||'';
+      document.getElementById('b-date').value    =p.date||'';
+      document.getElementById('b-media').value   =p.media||'';
+      document.getElementById('b-summary').value =p.summary;
+      document.getElementById('b-content').value =p.content||'';
+      document.getElementById('b-edit-id').value =p.id;
+      document.getElementById('post-form-title').textContent='Edit Post';
+      if(mdTab==='preview')switchTab('write');
+      document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+      document.getElementById('section-add-post').classList.add('active');
+    }
+    function renderPostsTable() {
+      const posts=getPosts(); const wrap=document.getElementById('posts-table-wrap');
+      if(!posts.length){wrap.innerHTML='<div class="empty-state">No posts yet.</div>';return;}
+      wrap.innerHTML=`<table class="admin-table">
+        <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>${posts.map(p=>`<tr>
+          <td><strong>${p.title}</strong></td>
+          <td style="font-family:var(--mono);font-size:0.7rem;color:var(--muted);">${p.category||'General'}</td>
+          <td style="font-family:var(--mono);font-size:0.7rem;color:var(--muted);">${p.date||'—'}</td>
+          <td style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn-edit" onclick="editPost('${p.id}')">Edit</button>
+            <button class="btn-danger" onclick="confirmDeletePost('${p.id}','${p.title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">Delete</button>
+          </td>
+        </tr>`).join('')}</tbody></table>`;
+    }
+    function confirmDeletePost(id, title) {
+      if(confirm(`Delete post "${title}"?`)){ deletePost(id); renderPostsTable(); updateDash(); showAlert('manage-posts-alert',`"${title}" deleted.`,'success'); autoExportDataJS(); }
+    }
+
+    // ===== HOME EDITOR =====
+    let tickerItems = [];
+    function loadHomeForm() {
+      const h = getHomeContent();
+      const set = (id, val) => { const el=document.getElementById(id); if(el&&val!==undefined)el.value=val; };
+      set('h-badge',       h.badge||'');
+      set('h-name1',       h.name1||'');
+      set('h-name2',       h.name2||'');
+      set('h-accentword',  h.accentWord||'');
+      set('h-titletag',    h.titleTag||'');
+      set('h-manifesto',   h.manifesto||'');
+      set('h-stat-projects', h.statProjects||'');
+      set('h-stat-awards',   h.statAwards||'');
+      set('h-stat-domains',  h.statDomains||'');
+      set('h-stat-patents',  h.statPatents||'');
+      set('h-mission',     h.terminalMission||'');
+      set('h-about-title', h.aboutTitle||'');
+      set('h-about-intro', h.aboutIntro||'');
+      tickerItems = [...(h.ticker || [])];
+      renderTickerItems();
+    }
+
+    function renderTickerItems() {
+      const wrap = document.getElementById('ticker-items-wrap');
+      wrap.innerHTML = '';
+      tickerItems.forEach((t, i) => {
+        const row = document.createElement('div'); row.className='ticker-item-row';
+        row.innerHTML = `<input type="text" value="${t.replace(/"/g,'&quot;')}" oninput="tickerItems[${i}]=this.value" placeholder="Achievement text...">
+          <button class="ticker-del-btn" onclick="removeTickerItem(${i})">✕</button>`;
+        wrap.appendChild(row);
+      });
+    }
+    function addTickerItem()     { tickerItems.push(''); renderTickerItems(); }
+    function removeTickerItem(i) { tickerItems.splice(i,1); renderTickerItems(); }
+
+    function saveHomeForm() {
+      const get = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+      saveHomeContent({
+        badge: get('h-badge'), name1: get('h-name1'), name2: get('h-name2'),
+        accentWord: get('h-accentword'), titleTag: get('h-titletag'),
+        manifesto: document.getElementById('h-manifesto').value,
+        statProjects: get('h-stat-projects'), statAwards: get('h-stat-awards'),
+        statDomains: get('h-stat-domains'), statPatents: get('h-stat-patents'),
+        terminalMission: get('h-mission'),
+        aboutTitle: get('h-about-title'),
+        aboutIntro: document.getElementById('h-about-intro').value,
+        ticker: [...tickerItems].filter(Boolean)
+      });
+      showAlert('home-alert', '✓ Homepage content saved! Changes are live. Click "⬇ Export data.js" to make permanent for all visitors.', 'success');
+      autoExportDataJS();
+    }
+
+    // ===== AUTO EXPORT (silent, no alert) =====
+    function autoExportDataJS() {
+      try {
+        const js = buildDataJS();
+        const blob = new Blob([js], { type: 'text/javascript' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'data.js';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      } catch(e) { console.warn('Auto-export failed:', e); }
+    }
+
+    function buildDataJS() {
+      const projects = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS) || 'null') || DEFAULT_PROJECTS;
+      const posts    = JSON.parse(localStorage.getItem(DATA_KEY_POSTS)    || 'null') || DEFAULT_POSTS;
+      const cats     = getCategories();
+      const home     = getHomeContent();
+      return `// Portfolio Data Layer - localStorage based (GitHub Pages compatible)
+// AUTO-GENERATED by Admin Panel — ${new Date().toLocaleString()}
+
+const DEFAULT_CATEGORIES = ${JSON.stringify(cats, null, 2)};
+
+const DEFAULT_HOME_CONTENT = ${JSON.stringify(home, null, 2)};
+
+const DEFAULT_PROJECTS = ${JSON.stringify(projects, null, 2)};
+
+const DEFAULT_POSTS = ${JSON.stringify(posts, null, 2)};
+
+const DATA_KEY_PROJECTS    = 'portfolio_projects_v2';
+const DATA_KEY_POSTS       = 'portfolio_posts_v2';
+const DATA_KEY_INITIALIZED = 'portfolio_initialized_v2';
+const DATA_KEY_CATEGORIES  = 'portfolio_categories_v3';
+const DATA_KEY_HOME        = 'portfolio_home_v3';
+
+function initData() {
+  if (!localStorage.getItem(DATA_KEY_INITIALIZED)) {
+    localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(DEFAULT_PROJECTS));
+    localStorage.setItem(DATA_KEY_POSTS, JSON.stringify(DEFAULT_POSTS));
+    localStorage.setItem(DATA_KEY_INITIALIZED, '1');
+  }
+  if (!localStorage.getItem(DATA_KEY_CATEGORIES)) {
+    localStorage.setItem(DATA_KEY_CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES));
+  }
+  if (!localStorage.getItem(DATA_KEY_HOME)) {
+    localStorage.setItem(DATA_KEY_HOME, JSON.stringify(DEFAULT_HOME_CONTENT));
+  }
+}
+
+function getCategories() { initData(); return JSON.parse(localStorage.getItem(DATA_KEY_CATEGORIES) || '[]'); }
+function saveCategories(cats) { localStorage.setItem(DATA_KEY_CATEGORIES, JSON.stringify(cats)); }
+function getCategoryById(id) { return getCategories().find(c => c.id === id) || { id, name: id, icon: '📁', color: '#888' }; }
+function getCategoryNames() { const o={}; getCategories().forEach(c => { o[c.id]=c.name; }); return o; }
+let CATEGORY_NAMES = {};
+function refreshCategoryNames() { CATEGORY_NAMES = getCategoryNames(); }
+
+function getHomeContent() { initData(); return JSON.parse(localStorage.getItem(DATA_KEY_HOME) || '{}'); }
+function saveHomeContent(data) { const cur=getHomeContent(); localStorage.setItem(DATA_KEY_HOME, JSON.stringify({...cur,...data})); }
+
+function getProjects(category) {
+  initData();
+  let all = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS) || '[]');
+  all.sort((a,b) => { if(a.pinned&&!b.pinned)return -1; if(!a.pinned&&b.pinned)return 1; return (a.order||0)-(b.order||0); });
+  if (category) return all.filter(p => p.category === category);
+  return all;
+}
+function getPosts() { initData(); return JSON.parse(localStorage.getItem(DATA_KEY_POSTS) || '[]'); }
+function getPostById(id) { return getPosts().find(p => p.id === id) || null; }
+function saveProject(project) {
+  initData();
+  const all = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS) || '[]');
+  const idx = all.findIndex(p => p.id === project.id);
+  if (idx >= 0) all[idx] = project; else { project.order = all.length; all.unshift(project); }
+  localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(all));
+}
+function deleteProject(id) { initData(); localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS)||'[]').filter(p=>p.id!==id))); }
+function savePost(post) {
+  initData(); const all=getPosts(); const idx=all.findIndex(p=>p.id===post.id);
+  if(idx>=0)all[idx]=post; else all.unshift(post);
+  localStorage.setItem(DATA_KEY_POSTS, JSON.stringify(all));
+}
+function deletePost(id) { initData(); localStorage.setItem(DATA_KEY_POSTS, JSON.stringify(getPosts().filter(p=>p.id!==id))); }
+function saveProjectsOrder(orderedIds) {
+  initData();
+  const all = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS)||'[]');
+  orderedIds.forEach((id,idx) => { const p=all.find(x=>x.id===id); if(p)p.order=idx; });
+  localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(all));
+}
+function togglePinProject(id) {
+  initData();
+  const all = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS)||'[]');
+  const p = all.find(x=>x.id===id); if(p)p.pinned=!p.pinned;
+  localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(all));
+}
+function genId() { return 'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); }
+
+// Collage settings
+const DATA_KEY_COLLAGE = 'portfolio_collage_v1';
+function getCollageSettings() { const raw=localStorage.getItem(DATA_KEY_COLLAGE); return raw?JSON.parse(raw):{}; }
+function saveCollageSettings(s) { localStorage.setItem(DATA_KEY_COLLAGE,JSON.stringify(s)); }
+function getCategoryCollage(catId) { const all=getCollageSettings(); return all[catId]||{enabled:false,blur:8,opacity:0.75,cols:3,photos:[]}; }
+function setCategoryCollage(catId,cfg) { const all=getCollageSettings(); all[catId]={...getCategoryCollage(catId),...cfg}; saveCollageSettings(all); }
+`;
+    }
+
+    // ===== EXPORT data.js =====
+    function exportDataJS() {
+      const js = buildDataJS();
+      const blob = new Blob([js], { type: 'text/javascript' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'data.js';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      alert('✅ data.js downloaded!\n\n📋 TO MAKE CHANGES PERMANENT ON GITHUB PAGES:\n1. Open your GitHub repo\n2. Click on data.js file\n3. Click the pencil ✏️ (edit) icon\n4. Select all and paste the downloaded file contents\n   (OR drag & drop the file to upload it)\n5. Click "Commit changes"\n6. Wait ~30 seconds for GitHub Pages to rebuild\n\nChanges will then be visible to ALL visitors!\n\nNote: Every Save button now also auto-downloads data.js for you.');
+    }
+
+    // ===== RESET =====
+    function resetData() {
+      if (confirm('Reset ALL data to defaults? This cannot be undone.')) {
+        [DATA_KEY_INITIALIZED, DATA_KEY_PROJECTS, DATA_KEY_POSTS, DATA_KEY_CATEGORIES, DATA_KEY_HOME].forEach(k => localStorage.removeItem(k));
+        initData(); refreshCategoryNames(); updateDash(); alert('Data reset to defaults.');
+      }
+    }
+
+    // ===== ALERTS =====
+    function showAlert(id, msg, type) {
+      const el=document.getElementById(id); if(!el)return;
+      el.className=`alert alert-${type} show`; el.textContent=msg;
+      setTimeout(()=>el.classList.remove('show'),4000);
+    }
+    function hideAlert(id){ const el=document.getElementById(id); if(el)el.classList.remove('show'); }
+
+    // Mobile nav
+    const navToggle=document.getElementById('navToggle'), navLinks=document.querySelector('.nav-links');
+    if(navToggle&&navLinks)navToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
+
+    if(sessionStorage.getItem(SESSION_KEY)==='1'){ onAdminReady(); setTimeout(populateCategorySelect,100); }
+  </script>
+</body>
+</html>

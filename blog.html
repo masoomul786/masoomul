@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Masoomul Haque Choudhury</title>
+  <meta name="description" content="Essays, research notes, and ideas about AI, security, and technology.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+
+  <div class="page-wrap">
+    <div class="section-header fade-up">
+      <div class="page-label">Writing</div>
+      <h1 class="page-title">Blog</h1>
+      <p class="page-desc">Research notes, ideas, and essays on AI, cybersecurity, and the future.</p>
+    </div>
+
+    <div class="projects-section">
+      <div id="postsContainer"></div>
+    </div>
+
+    <footer class="site-footer">
+      <span>Masoomul Haque Choudhury &mdash; Built for GitHub Pages</span>
+    </footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    document.getElementById('nav-placeholder').innerHTML = renderNav('blog.html');
+    initMobileNav();
+
+    function renderPosts() {
+      const posts = getPosts();
+      const container = document.getElementById('postsContainer');
+      if (!posts.length) {
+        container.innerHTML = '<div class="empty-state">No posts yet. Add them via the Admin panel.</div>';
+        return;
+      }
+      container.innerHTML = `<div class="posts-list">${posts.map(p => {
+        const thumbHtml = p.media
+          ? `<img class="post-thumb" src="${p.media}" alt="${p.title}" loading="lazy">`
+          : `<div style="width:120px;height:80px;background:var(--bg3);border-radius:4px;display:flex;align-items:center;justify-content:center;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);">NO IMG</span></div>`;
+        return `
+          <div class="post-card" onclick="openBlogModal('${p.id}')">
+            <div>
+              <div class="post-title">${p.title}</div>
+              <p class="post-summary">${p.summary}</p>
+              <div class="post-meta">
+                <span class="post-cat">${p.category || 'General'}</span>
+                &nbsp;&middot;&nbsp; ${p.date || ''}
+              </div>
+              <button class="project-blog-btn" style="margin-top:0.75rem;" onclick="event.stopPropagation();openBlogModal('${p.id}')">Read Full Article &rarr;</button>
+            </div>
+            ${thumbHtml}
+          </div>`;
+      }).join('')}</div>`;
+    }
+
+    renderPosts();
+  </script>
+</body>
+</html>
