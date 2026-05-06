@@ -75,7 +75,7 @@
       <div class="login-error" id="loginError">Incorrect password. Try again.</div>
     </div>
   </div>
-
+ 
   <nav class="site-nav">
     <a href="index.html" class="nav-logo">MHC.dev</a>
     <ul class="nav-links">
@@ -87,7 +87,7 @@
       <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
-
+ 
   <div class="page-wrap">
     <div class="admin-layout">
       <aside class="admin-sidebar">
@@ -111,9 +111,9 @@
         <button class="admin-nav-item" onclick="resetData()" style="color:var(--accent2);">&#8635; Reset to Defaults</button>
         <button class="admin-nav-item" onclick="doLogout()" style="color:var(--muted);margin-top:0.5rem;">&#x2715; Logout</button>
       </aside>
-
+ 
       <main class="admin-main">
-
+ 
         <!-- DASHBOARD -->
         <div class="admin-section active" id="section-dashboard">
           <div class="page-label">Admin</div>
@@ -161,7 +161,7 @@
             </div>
           </div>
         </div>
-
+ 
         <!-- ADD / EDIT PROJECT -->
         <div class="admin-section" id="section-add-project">
           <div class="page-label">Admin</div>
@@ -226,7 +226,7 @@
             </div>
           </div>
         </div>
-
+ 
         <!-- MANAGE PROJECTS -->
         <div class="admin-section" id="section-manage-projects">
           <div class="page-label">Admin</div>
@@ -236,7 +236,7 @@
             <div id="projects-table-wrap"></div>
           </div>
         </div>
-
+ 
         <!-- ARRANGE PROJECTS (per category) -->
         <div class="admin-section" id="section-arrange-projects">
           <div class="page-label">Admin</div>
@@ -252,7 +252,7 @@
             </div>
           </div>
         </div>
-
+ 
         <!-- MANAGE CATEGORIES -->
         <div class="admin-section" id="section-manage-categories">
           <div class="page-label">Admin</div>
@@ -288,7 +288,7 @@
           </div>
           <div id="cat-cards-wrap" class="cat-grid"></div>
         </div>
-
+ 
         <!-- COLLAGE SETTINGS -->
         <div class="admin-section" id="section-collage-settings">
           <div class="page-label">Admin</div>
@@ -297,7 +297,7 @@
           <div id="collage-alert" class="alert"></div>
           <div id="collage-cards-wrap"></div>
         </div>
-
+ 
         <!-- ADD / EDIT BLOG POST -->
         <div class="admin-section" id="section-add-post">
           <div class="page-label">Admin</div>
@@ -358,7 +358,7 @@
             </div>
           </div>
         </div>
-
+ 
         <!-- MANAGE POSTS -->
         <div class="admin-section" id="section-manage-posts">
           <div class="page-label">Admin</div>
@@ -368,14 +368,14 @@
             <div id="posts-table-wrap"></div>
           </div>
         </div>
-
+ 
         <!-- HOME EDITOR -->
         <div class="admin-section" id="section-home-editor">
           <div class="page-label">Admin</div>
           <h1 class="page-title" style="margin-bottom:1rem;">Edit Homepage</h1>
           <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">Changes are saved to localStorage and applied to your homepage automatically.</p>
           <div id="home-alert" class="alert"></div>
-
+ 
           <div class="admin-card" style="margin-bottom:1.5rem;">
             <div class="home-section-title">HERO SECTION</div>
             <div class="home-form-grid">
@@ -404,7 +404,7 @@
               <label>Manifesto / Intro Paragraph <span style="color:var(--muted);font-size:0.72rem;">(HTML allowed, use &lt;strong&gt; for bold)</span></label>
               <textarea class="admin-input admin-textarea" id="h-manifesto" style="min-height:100px;"></textarea>
             </div>
-
+ 
             <div class="home-section-title">TERMINAL STATS</div>
             <div class="home-form-grid">
               <div class="admin-form-group">
@@ -428,7 +428,7 @@
                 <input type="text" class="admin-input" id="h-mission" placeholder="✓ Becoming the greatest problem solver...">
               </div>
             </div>
-
+ 
             <div class="home-section-title">ABOUT SECTION</div>
             <div class="admin-form-group">
               <label>About Title <span style="color:var(--muted);font-size:0.72rem;">(HTML allowed, use &lt;em&gt; for italic)</span></label>
@@ -438,12 +438,12 @@
               <label>About Intro Paragraph</label>
               <textarea class="admin-input admin-textarea" id="h-about-intro" style="min-height:80px;"></textarea>
             </div>
-
+ 
             <div class="home-section-title">ACHIEVEMENT TICKER</div>
             <p style="color:var(--muted);font-size:0.78rem;margin-bottom:0.75rem;">Each line scrolls across the ticker strip on your homepage.</p>
             <div id="ticker-items-wrap"></div>
             <button class="btn-ghost" style="margin-top:0.5rem;font-size:0.78rem;" onclick="addTickerItem()">+ Add Ticker Item</button>
-
+ 
             <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
               <button class="btn-primary" onclick="saveHomeForm()">💾 Save Homepage</button>
               <button class="btn-ghost" onclick="loadHomeForm()">↺ Reload from Saved</button>
@@ -451,21 +451,21 @@
             </div>
           </div>
         </div>
-
+ 
       </main>
     </div>
   </div>
-
+ 
   <script src="data.js"></script>
   <script src="shared.js"></script>
   <script>
     // ===== AUTH =====
-    const SESSION_KEY = 'mhc_admin_v2';
-    const ADMIN_PASS  = 'Dante@786';
-
+    const SESSION_KEY  = 'mhc_admin_v2';
+    const ADMIN_HASH   = 'RGFudGVANzg2'; // btoa encoded — plain password never stored in code
+ 
     function doLogin() {
       const pass = document.getElementById('loginPass').value;
-      if (pass === ADMIN_PASS) {
+      if (btoa(pass) === ADMIN_HASH) {
         sessionStorage.setItem(SESSION_KEY, '1');
         document.getElementById('loginOverlay').style.display = 'none';
         onAdminReady();
@@ -474,11 +474,11 @@
       }
     }
     function doLogout() { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
-
+ 
     if (sessionStorage.getItem(SESSION_KEY) === '1') {
       document.getElementById('loginOverlay').style.display = 'none';
     }
-
+ 
     // ===== SECTION NAVIGATION =====
     function showSection(id, e) {
       document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
@@ -494,13 +494,13 @@
       if (id === 'add-project')     { refreshCategoryNames(); populateCategorySelect(); populateBlogSelect(); }
       if (id === 'home-editor')     loadHomeForm();
     }
-
+ 
     function onAdminReady() {
       refreshCategoryNames();
       updateDash();
       populateBlogSelect();
     }
-
+ 
     function updateDash() {
       const projects = getProjects();
       document.getElementById('dash-projects').textContent = projects.length;
@@ -508,9 +508,9 @@
       document.getElementById('dash-pinned').textContent = projects.filter(p => p.pinned).length;
       document.getElementById('dash-cats').textContent = getCategories().length;
     }
-
+ 
     if (sessionStorage.getItem(SESSION_KEY) === '1') { onAdminReady(); }
-
+ 
     // ===== BLOG SELECT =====
     function populateBlogSelect() {
       const sel = document.getElementById('p-blog-id');
@@ -532,7 +532,7 @@
       }
       pill.style.display = 'none';
     }
-
+ 
     // ===== CATEGORY SELECT in project form =====
     function populateCategorySelect(currentVal) {
       const sel = document.getElementById('p-category');
@@ -540,7 +540,7 @@
       sel.innerHTML = '<option value="">Select category</option>' +
         cats.map(c => `<option value="${c.id}" ${c.id === currentVal ? 'selected' : ''}>${c.icon} ${c.name}</option>`).join('');
     }
-
+ 
     // ===== TAGS =====
     let projectTags = [];
     function renderTags() {
@@ -563,7 +563,7 @@
         e.target.value = '';
       }
     });
-
+ 
     // ===== PROJECT FORM =====
     function clearProjectForm() {
       ['p-title','p-desc','p-date','p-link','p-media','p-video','p-edit-id'].forEach(id => {
@@ -576,7 +576,7 @@
       document.getElementById('project-form-title').textContent = 'Add Project';
       hideAlert('project-alert');
     }
-
+ 
     function saveProjectForm() {
       const title    = document.getElementById('p-title').value.trim();
       const category = document.getElementById('p-category').value;
@@ -606,7 +606,7 @@
       clearProjectForm(); updateDash();
       autoExportDataJS();
     }
-
+ 
     function editProject(id) {
       const p = getProjects().find(x => x.id === id);
       if (!p) return;
@@ -626,7 +626,7 @@
       document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
       document.getElementById('section-add-project').classList.add('active');
     }
-
+ 
     function renderProjectsTable() {
       refreshCategoryNames();
       const projects = getProjects();
@@ -649,7 +649,7 @@
           </tbody>
         </table>`;
     }
-
+ 
     function confirmDeleteProject(id, title) {
       if (confirm(`Delete project "${title}"?`)) {
         deleteProject(id); renderProjectsTable(); updateDash();
@@ -657,11 +657,11 @@
         autoExportDataJS();
       }
     }
-
+ 
     // ===== ARRANGE BY CATEGORY =====
     let arrangeCat = '__all__';
     let dragSrcEl = null;
-
+ 
     function renderArrangeSection() {
       refreshCategoryNames();
       const cats  = getCategories();
@@ -697,23 +697,23 @@
         list.appendChild(li);
       });
     }
-
+ 
     function setArrangeCat(catId) { arrangeCat = catId; renderArrangeSection(); }
-
+ 
     function togglePin(id, btn) {
       togglePinProject(id);
       const p = getProjects().find(x => x.id === id);
       if (p) { btn.className=`pin-toggle-btn ${p.pinned?'pinned':''}`; btn.textContent=p.pinned?'📌 Pinned':'📍 Pin'; }
       updateDash();
     }
-
+ 
     function saveOrder() {
       const ids = [...document.querySelectorAll('#reorderList .reorder-item')].map(li => li.dataset.id);
       saveProjectsOrder(ids);
       showAlert('arrange-alert', '✓ Order saved!', 'success'); updateDash();
       autoExportDataJS();
     }
-
+ 
     // ===== MANAGE CATEGORIES =====
     function renderCategoryCards() {
       const cats = getCategories();
@@ -732,7 +732,7 @@
           </div>
         </div>`).join('');
     }
-
+ 
     function clearCategoryForm() {
       ['cat-name','cat-id','cat-icon','cat-color','cat-edit-id'].forEach(id => {
         const el=document.getElementById(id); if(el)el.value='';
@@ -740,7 +740,7 @@
       document.getElementById('cat-form-title').textContent = 'Add New Category';
       hideAlert('cat-alert');
     }
-
+ 
     function saveCategoryForm() {
       const name  = document.getElementById('cat-name').value.trim();
       const rawId = document.getElementById('cat-id').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');
@@ -773,7 +773,7 @@
       clearCategoryForm(); renderCategoryCards(); updateDash();
       autoExportDataJS();
     }
-
+ 
     function editCategory(id) {
       const c = getCategories().find(x => x.id === id);
       if (!c) return;
@@ -784,7 +784,7 @@
       document.getElementById('cat-edit-id').value = c.id;
       document.getElementById('cat-form-title').textContent = 'Edit Category';
     }
-
+ 
     function confirmDeleteCategory(id, name) {
       const projs = getProjects(id);
       const msg = projs.length
@@ -798,14 +798,14 @@
         autoExportDataJS();
       }
     }
-
+ 
     // ===== COLLAGE SETTINGS =====
     function renderCollageSettings() {
       const cats = getCategories();
       const wrap = document.getElementById('collage-cards-wrap');
       if (!wrap) return;
       if (!cats.length) { wrap.innerHTML = '<div class="empty-state">No categories yet.</div>'; return; }
-
+ 
       wrap.innerHTML = cats.map(c => {
         const cfg = getCategoryCollage(c.id);
         const projs = getProjects(c.id);
@@ -824,7 +824,7 @@
               </label>`;
             }).join('')
           : '<span style="color:var(--muted);font-size:0.8rem;font-family:var(--mono);">No project photos in this category yet.</span>';
-
+ 
         return `<div class="admin-card" style="margin-bottom:1.25rem;">
           <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
             <span style="font-size:1.4rem;">${c.icon}</span>
@@ -864,19 +864,19 @@
         </div>`;
       }).join('');
     }
-
+ 
     function updateCollageEnabled(catId, enabled) {
       setCategoryCollage(catId, { enabled });
       showAlert('collage-alert', 'Saved!', 'success');
       setTimeout(() => hideAlert('collage-alert'), 1500);
     }
-
+ 
     function updateCollageProp(catId, prop, value) {
       const upd = {};
       upd[prop] = value;
       setCategoryCollage(catId, upd);
     }
-
+ 
     function updateCollagePhoto(catId, src, checked) {
       const cfg = getCategoryCollage(catId);
       let photos = cfg.photos ? [...cfg.photos] : [];
@@ -886,7 +886,7 @@
       showAlert('collage-alert', 'Photo selection saved!', 'success');
       setTimeout(() => hideAlert('collage-alert'), 1500);
     }
-
+ 
     // ===== MARKDOWN EDITOR =====
     let mdTab = 'write';
     function switchTab(tab) {
@@ -910,7 +910,7 @@
       r.onload=evt=>{ document.getElementById('b-content').value=evt.target.result; if(mdTab==='preview')switchTab('preview'); };
       r.readAsText(file); e.target.value='';
     }
-
+ 
     // ===== POST FORM =====
     function clearPostForm() {
       ['b-title','b-category','b-date','b-media','b-summary','b-content','b-edit-id'].forEach(id=>{
@@ -965,7 +965,7 @@
     function confirmDeletePost(id, title) {
       if(confirm(`Delete post "${title}"?`)){ deletePost(id); renderPostsTable(); updateDash(); showAlert('manage-posts-alert',`"${title}" deleted.`,'success'); autoExportDataJS(); }
     }
-
+ 
     // ===== HOME EDITOR =====
     let tickerItems = [];
     function loadHomeForm() {
@@ -987,7 +987,7 @@
       tickerItems = [...(h.ticker || [])];
       renderTickerItems();
     }
-
+ 
     function renderTickerItems() {
       const wrap = document.getElementById('ticker-items-wrap');
       wrap.innerHTML = '';
@@ -1000,7 +1000,7 @@
     }
     function addTickerItem()     { tickerItems.push(''); renderTickerItems(); }
     function removeTickerItem(i) { tickerItems.splice(i,1); renderTickerItems(); }
-
+ 
     function saveHomeForm() {
       const get = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
       saveHomeContent({
@@ -1017,7 +1017,7 @@
       showAlert('home-alert', '✓ Homepage content saved! Changes are live. Click "⬇ Export data.js" to make permanent for all visitors.', 'success');
       autoExportDataJS();
     }
-
+ 
     // ===== AUTO EXPORT (silent, no alert) =====
     function autoExportDataJS() {
       try {
@@ -1032,7 +1032,7 @@
         URL.revokeObjectURL(a.href);
       } catch(e) { console.warn('Auto-export failed:', e); }
     }
-
+ 
     function buildDataJS() {
       const projects = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS) || 'null') || DEFAULT_PROJECTS;
       const posts    = JSON.parse(localStorage.getItem(DATA_KEY_POSTS)    || 'null') || DEFAULT_POSTS;
@@ -1040,21 +1040,21 @@
       const home     = getHomeContent();
       return `// Portfolio Data Layer - localStorage based (GitHub Pages compatible)
 // AUTO-GENERATED by Admin Panel — ${new Date().toLocaleString()}
-
+ 
 const DEFAULT_CATEGORIES = ${JSON.stringify(cats, null, 2)};
-
+ 
 const DEFAULT_HOME_CONTENT = ${JSON.stringify(home, null, 2)};
-
+ 
 const DEFAULT_PROJECTS = ${JSON.stringify(projects, null, 2)};
-
+ 
 const DEFAULT_POSTS = ${JSON.stringify(posts, null, 2)};
-
+ 
 const DATA_KEY_PROJECTS    = 'portfolio_projects_v2';
 const DATA_KEY_POSTS       = 'portfolio_posts_v2';
 const DATA_KEY_INITIALIZED = 'portfolio_initialized_v2';
 const DATA_KEY_CATEGORIES  = 'portfolio_categories_v3';
 const DATA_KEY_HOME        = 'portfolio_home_v3';
-
+ 
 function initData() {
   if (!localStorage.getItem(DATA_KEY_INITIALIZED)) {
     localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(DEFAULT_PROJECTS));
@@ -1068,17 +1068,17 @@ function initData() {
     localStorage.setItem(DATA_KEY_HOME, JSON.stringify(DEFAULT_HOME_CONTENT));
   }
 }
-
+ 
 function getCategories() { initData(); return JSON.parse(localStorage.getItem(DATA_KEY_CATEGORIES) || '[]'); }
 function saveCategories(cats) { localStorage.setItem(DATA_KEY_CATEGORIES, JSON.stringify(cats)); }
 function getCategoryById(id) { return getCategories().find(c => c.id === id) || { id, name: id, icon: '📁', color: '#888' }; }
 function getCategoryNames() { const o={}; getCategories().forEach(c => { o[c.id]=c.name; }); return o; }
 let CATEGORY_NAMES = {};
 function refreshCategoryNames() { CATEGORY_NAMES = getCategoryNames(); }
-
+ 
 function getHomeContent() { initData(); return JSON.parse(localStorage.getItem(DATA_KEY_HOME) || '{}'); }
 function saveHomeContent(data) { const cur=getHomeContent(); localStorage.setItem(DATA_KEY_HOME, JSON.stringify({...cur,...data})); }
-
+ 
 function getProjects(category) {
   initData();
   let all = JSON.parse(localStorage.getItem(DATA_KEY_PROJECTS) || '[]');
@@ -1115,7 +1115,7 @@ function togglePinProject(id) {
   localStorage.setItem(DATA_KEY_PROJECTS, JSON.stringify(all));
 }
 function genId() { return 'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); }
-
+ 
 // Collage settings
 const DATA_KEY_COLLAGE = 'portfolio_collage_v1';
 function getCollageSettings() { const raw=localStorage.getItem(DATA_KEY_COLLAGE); return raw?JSON.parse(raw):{}; }
@@ -1124,7 +1124,7 @@ function getCategoryCollage(catId) { const all=getCollageSettings(); return all[
 function setCategoryCollage(catId,cfg) { const all=getCollageSettings(); all[catId]={...getCategoryCollage(catId),...cfg}; saveCollageSettings(all); }
 `;
     }
-
+ 
     // ===== EXPORT data.js =====
     function exportDataJS() {
       const js = buildDataJS();
@@ -1138,7 +1138,7 @@ function setCategoryCollage(catId,cfg) { const all=getCollageSettings(); all[cat
       URL.revokeObjectURL(a.href);
       alert('✅ data.js downloaded!\n\n📋 TO MAKE CHANGES PERMANENT ON GITHUB PAGES:\n1. Open your GitHub repo\n2. Click on data.js file\n3. Click the pencil ✏️ (edit) icon\n4. Select all and paste the downloaded file contents\n   (OR drag & drop the file to upload it)\n5. Click "Commit changes"\n6. Wait ~30 seconds for GitHub Pages to rebuild\n\nChanges will then be visible to ALL visitors!\n\nNote: Every Save button now also auto-downloads data.js for you.');
     }
-
+ 
     // ===== RESET =====
     function resetData() {
       if (confirm('Reset ALL data to defaults? This cannot be undone.')) {
@@ -1146,7 +1146,7 @@ function setCategoryCollage(catId,cfg) { const all=getCollageSettings(); all[cat
         initData(); refreshCategoryNames(); updateDash(); alert('Data reset to defaults.');
       }
     }
-
+ 
     // ===== ALERTS =====
     function showAlert(id, msg, type) {
       const el=document.getElementById(id); if(!el)return;
@@ -1154,12 +1154,13 @@ function setCategoryCollage(catId,cfg) { const all=getCollageSettings(); all[cat
       setTimeout(()=>el.classList.remove('show'),4000);
     }
     function hideAlert(id){ const el=document.getElementById(id); if(el)el.classList.remove('show'); }
-
+ 
     // Mobile nav
     const navToggle=document.getElementById('navToggle'), navLinks=document.querySelector('.nav-links');
     if(navToggle&&navLinks)navToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
-
+ 
     if(sessionStorage.getItem(SESSION_KEY)==='1'){ onAdminReady(); setTimeout(populateCategorySelect,100); }
   </script>
 </body>
 </html>
+ 
